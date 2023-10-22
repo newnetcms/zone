@@ -2,9 +2,7 @@
 
 namespace Newnet\Zone;
 
-use Illuminate\Support\Facades\Event;
-use Newnet\Zone\Console\Commands\DownloadCommand;
-use Newnet\Zone\Console\Commands\UpdateCommand;
+use Newnet\Zone\Console\Commands\ImportCommand;
 use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepository;
 use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepositoryInterface;
 use Newnet\Zone\Repositories\Eloquent\ZoneProvinceRepository;
@@ -35,9 +33,9 @@ class ZoneServiceProvider extends BaseModuleServiceProvider
         $this->app->bind(ZoneTownshipRepositoryInterface::class, ZoneTownshipRepository::class);
 
         $this->commands([
-            DownloadCommand::class,
-            UpdateCommand::class,
+            ImportCommand::class,
         ]);
+
         require_once __DIR__.'/../helpers/helpers.php';
     }
 }

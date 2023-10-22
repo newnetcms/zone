@@ -14,8 +14,8 @@ if (!function_exists('get_zone_provice_options')) {
     {
         $options = [];
         $zoneProvinces = ZoneProvince::whereStatus(1)
-            ->orderBy('sort_order', 'ASC')
-            ->orderBy('id', 'ASC')
+            ->orderBy('sort_order')
+            ->orderBy('name')
             ->get([
                 'id',
                 'name',

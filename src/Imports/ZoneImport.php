@@ -2,6 +2,7 @@
 
 namespace Newnet\Zone\Imports;
 
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
@@ -17,54 +18,46 @@ class ZoneImport implements WithHeadingRow, SkipsOnFailure, ToArray, WithChunkRe
 
     protected $provinceMap = [];
 
-    protected $townshipMap = [];
+    protected $wardMap = [];
 
-    private $provinceStatus;
-
-    public function __construct($provinceStatus)
+    public function __construct()
     {
-        $this->provinceStatus = $provinceStatus;
         $this->createProvinceMap();
         $this->createDistrictMap();
-        $this->createTownshipMap();
+        $this->createWardMap();
     }
 
     public function onFailure(Failure ...$failures)
     {
-        foreach ($failures as $failure) {
-            \Log::error('ZoneImport@onFailure', [$failure->toArray()]);
-        }
+
     }
 
     public function array(array $array)
     {
-        $townshipImport = [];
+        $wardImport = [];
         foreach ($array as $item) {
-            if (empty($item['ma']) || empty($item['ten'])) {
-                continue;
-            }
+            if (!empty($item['ma_tp']) && !empty($item['ma_qh']) && !empty($item['ma_px'])) {
+                if (!empty($this->wardMap[$item['ma_px']])) {
+                    ZoneTownship::whereCode($this->wardMap[$item['ma_px']])->update(['name' => $item['phuong_xa']]);
+                } else {
+                    $districtId = $this->getDistrictId($item);
 
-            if (isset($this->townshipMap[$item['ma']])) {
-                continue;
+                    $wardImport[] = [
+                        'name' => $item['phuong_xa'],
+                        'code' => $item['ma_px'],
+                        'district_id' => $districtId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
-
-            $districtId = $this->getDistrictId($item);
-            $townshipImport[] = [
-                'name'        => $item['ten'],
-                'code'        => $item['ma'],
-                'status'      => true,
-                'district_id' => $districtId,
-                'created_at'  => now(),
-                'updated_at'  => now(),
-            ];
         }
 
         try {
-            ZoneTownship::insert($townshipImport);
+            DB::table('zone_townships')->insert($wardImport);
         } catch (\Exception $e) {
-            \Log::error('ImportError', [
+            \Log::error('VienamZoneImport', [
                 'message' => $e->getMessage(),
-                'data'    => $townshipImport,
             ]);
         }
     }
@@ -74,9 +67,26 @@ class ZoneImport implements WithHeadingRow, SkipsOnFailure, ToArray, WithChunkRe
         return 1000;
     }
 
+    private function getProvinceId(array $item)
+    {
+        return $this->provinceMap[$item['ma_tp']] ?? $this->createProvince($item);
+    }
+
     private function getDistrictId(array $item)
     {
         return $this->districtMap[$item['ma_qh']] ?? $this->createDistrict($item);
+    }
+
+    private function createProvince(array $item)
+    {
+        $province = ZoneProvince::create([
+            'name' => trim(preg_replace('/Thành phố|Tỉnh/', '', $item['tinh_thanh_pho'])),
+            'code' => $item['ma_tp'],
+        ]);
+
+        $this->provinceMap[$item['ma_tp']] = $province->id;
+
+        return $province->id;
     }
 
     private function createDistrict(array $item)
@@ -84,9 +94,8 @@ class ZoneImport implements WithHeadingRow, SkipsOnFailure, ToArray, WithChunkRe
         $provinceId = $this->getProvinceId($item);
 
         $district = ZoneDistrict::create([
-            'name'        => $item['quan_huyen'],
-            'code'        => $item['ma_qh'],
-            'status'      => true,
+            'name' => $item['quan_huyen'],
+            'code' => $item['ma_qh'],
             'province_id' => $provinceId,
         ]);
 
@@ -95,27 +104,10 @@ class ZoneImport implements WithHeadingRow, SkipsOnFailure, ToArray, WithChunkRe
         return $district->id;
     }
 
-    private function getProvinceId(array $item)
-    {
-        return $this->provinceMap[$item['ma_tp']] ?? $this->createProvince($item);
-    }
-
-    private function createProvince(array $item)
-    {
-        $province = ZoneProvince::create([
-            'name'       => $item['tinh_thanh_pho'],
-            'code'       => $item['ma_tp'],
-            'status'     => $this->provinceStatus,
-        ]);
-
-        $this->provinceMap[$item['ma_tp']] = $province->id;
-
-        return $province->id;
-    }
-
     private function createProvinceMap()
     {
-        $provinces = ZoneProvince::get(['id', 'code']);
+        $provinces = DB::table('zone_provinces')->get(['code', 'id']);
+
         $this->provinceMap = $provinces
             ->keyBy('code')
             ->map(function ($item) {
@@ -126,7 +118,8 @@ class ZoneImport implements WithHeadingRow, SkipsOnFailure, ToArray, WithChunkRe
 
     private function createDistrictMap()
     {
-        $districts = ZoneDistrict::get(['id', 'code']);
+        $districts = DB::table('zone_districts')->get(['code', 'id']);
+
         $this->districtMap = $districts
             ->keyBy('code')
             ->map(function ($item) {
@@ -135,10 +128,11 @@ class ZoneImport implements WithHeadingRow, SkipsOnFailure, ToArray, WithChunkRe
             ->toArray();
     }
 
-    private function createTownshipMap()
+    private function createWardMap()
     {
-        $towships = ZoneTownship::get(['id', 'code']);
-        $this->townshipMap = $towships
+        $wards = DB::table('zone_townships')->get(['code', 'id']);
+
+        $this->wardMap = $wards
             ->keyBy('code')
             ->map(function ($item) {
                 return $item->id;
