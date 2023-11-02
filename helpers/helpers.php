@@ -36,16 +36,21 @@ if (!function_exists('get_zone_district_options')) {
      *
      * @return array
      */
-    function get_zone_district_options()
+    function get_zone_district_options($province_id = null)
     {
         $options = [];
         $zoneDistricts = ZoneDistrict::whereStatus(1)
             ->orderBy('sort_order', 'ASC')
-            ->orderBy('id', 'ASC')
-            ->get([
-                'id',
-                'name',
-            ]);
+            ->orderBy('id', 'ASC');
+
+        if ($province_id) {
+            $zoneDistricts->where('province_id', $province_id);
+        }
+
+        $zoneDistricts = $zoneDistricts->get([
+            'id',
+            'name',
+        ]);
         foreach ($zoneDistricts as $item) {
             $options[] = [
                 'value' => $item->id,
@@ -62,16 +67,21 @@ if (!function_exists('get_zone_township_options')) {
      *
      * @return array
      */
-    function get_zone_township_options()
+    function get_zone_township_options($district_id)
     {
         $options = [];
         $zoneTownships = ZoneTownship::whereStatus(1)
             ->orderBy('sort_order', 'ASC')
-            ->orderBy('id', 'ASC')
-            ->get([
-                'id',
-                'name',
-            ]);
+            ->orderBy('id', 'ASC');
+
+        if ($district_id) {
+            $zoneTownships->where('district_id', $district_id);
+        }
+
+        $zoneTownships = $zoneTownships->get([
+            'id',
+            'name',
+        ]);
         foreach ($zoneTownships as $item) {
             $options[] = [
                 'value' => $item->id,
