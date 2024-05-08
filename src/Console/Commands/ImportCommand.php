@@ -28,7 +28,7 @@ class ImportCommand extends Command
      */
     public function handle()
     {
-        $filename = $this->argument('filename') ?: storage_path('vietnam-zone.xls');
+        $filename = $this->argument('filename') ?: __DIR__.'/../../../database/db.xls';
         if (!File::exists($filename)) {
             $this->error("File {$filename} does not exist");
             return 1;
