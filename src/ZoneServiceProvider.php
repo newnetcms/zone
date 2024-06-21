@@ -2,6 +2,7 @@
 
 namespace Newnet\Zone;
 
+use Illuminate\Support\Facades\Blade;
 use Newnet\Zone\Console\Commands\ImportCommand;
 use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepository;
 use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepositoryInterface;
@@ -37,5 +38,12 @@ class ZoneServiceProvider extends BaseModuleServiceProvider
         ]);
 
         require_once __DIR__.'/../helpers/helpers.php';
+    }
+
+    public function boot()
+    {
+        parent::boot();
+
+        Blade::include('zone::form.zone', 'zone');
     }
 }
