@@ -14,10 +14,10 @@
     @select2(['name' => $province_name, 'label' => __('zone::module.province_id'), 'options' => get_zone_provice_options(), 'allowClear' => $allowClear])
 
     @if ($show_district)
-        @select2(['name' => $district_name, 'label' => __('zone::module.district_id'), 'options' => object_get($item, $province_name) ? get_zone_district_options(object_get($item, $province_name)) : [], 'allowClear' => $allowClear])
+        @select2(['name' => $district_name, 'label' => __('zone::module.district_id'), 'options' => old(get_dot_array_form($province_name), object_get($item, $province_name)) ? get_zone_district_options(old(get_dot_array_form($province_name), object_get($item, $province_name))) : [], 'allowClear' => $allowClear])
 
         @if ($show_township)
-            @select2(['name' => $township_name, 'label' => __('zone::module.township_id'), 'options' => object_get($item, $district_name) ? get_zone_township_options(object_get($item, $district_name)) : [], 'allowClear' => $allowClear])
+            @select2(['name' => $township_name, 'label' => __('zone::module.township_id'), 'options' => old(get_dot_array_form($district_name), object_get($item, $district_name)) ? get_zone_township_options(old(get_dot_array_form($district_name), object_get($item, $district_name))) : [], 'allowClear' => $allowClear])
         @endif
     @endif
 
@@ -36,6 +36,9 @@
                 $('#{{ $zone_id }} #{{ $township_name }}').empty().trigger('change');
                 axios.get(`/api/zone/provinces/${id}/districts`)
                     .then(res => {
+                        const newOption = new Option('', '', false, false);
+                        $('#{{ $zone_id }} #{{ $district_name }}').append(newOption).trigger('change');
+
                         res.data.items.forEach(o => {
                             const newOption = new Option(o.name, o.id, false, false);
                             $('#{{ $zone_id }} #{{ $district_name }}').append(newOption).trigger('change');
@@ -49,6 +52,9 @@
                 $('#{{ $zone_id }} #{{ $township_name }}').empty().trigger('change');
                 axios.get(`/api/zone/districts/${id}/townships`)
                     .then(res => {
+                        const newOption = new Option('', '', false, false);
+                        $('#{{ $zone_id }} #{{ $township_name }}').append(newOption).trigger('change');
+
                         res.data.items.forEach(o => {
                             const newOption = new Option(o.name, o.id, false, false);
                             $('#{{ $zone_id }} #{{ $township_name }}').append(newOption).trigger('change');
