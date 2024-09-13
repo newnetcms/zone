@@ -12,5 +12,6 @@
         </span>
     @enderror
     @input(['name' => 'code', 'label' => __('zone::province.code')])
+    @input(['name' => 'zip_code', 'label' => __('zone::province.zip_code')])
     @checkbox(['name' => 'status', 'label' => '', 'placeholder' => __('zone::province.status')])
 </div>

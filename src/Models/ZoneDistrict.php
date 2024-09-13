@@ -41,6 +41,7 @@ class ZoneDistrict extends Model
         'status',
         'sort_order',
         'province_id',
+        'zip_code',
     ];
 
     protected $casts = [

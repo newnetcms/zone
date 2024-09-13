@@ -40,6 +40,7 @@
                 <tr>
                     <th>ID</th>
                     <th>{{ __('zone::message.name') }}</th>
+                    <th>{{ __('zone::province.zip_code') }}</th>
                     <th>{{ __('zone::province.status') }}</th>
                     <th></th>
                 </tr>
@@ -53,6 +54,7 @@
                                 {{ $item->name }}
                             </a>
                         </td>
+                        <td>{{ $item->zip_code }}</td>
                         <td>
                             @if($item->status)
                                 <i class="fas fa-check text-success"></i>

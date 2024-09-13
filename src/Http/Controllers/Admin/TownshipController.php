@@ -59,13 +59,10 @@ class TownshipController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->zoneTownshipRepository->update(['id' => $id], [
-            'name' => $request->name,
-            'code' => $request->code,
-            'status' => $request->status
-        ]);
+        $item = $this->zoneTownshipRepository->updateById($request->all(), $id);
+
         return redirect()
-            ->back()
+            ->route('zone.admin.township.index', $item->district_id)
             ->with('success', __('zone::message.notification.updated'));
     }
 

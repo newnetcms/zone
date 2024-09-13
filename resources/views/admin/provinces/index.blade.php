@@ -51,6 +51,7 @@
                     <th>ID</th>
                     <th>{{ __('zone::province.name') }}</th>
                     <th>{{ __('zone::province.sort_order') }}</th>
+                    <th>{{ __('zone::province.zip_code') }}</th>
                     <th>{{ __('zone::province.status') }}</th>
                     <th></th>
                 </tr>
@@ -65,6 +66,7 @@
                             </a>
                         </td>
                         <td>{{ $item->sort_order }}</td>
+                        <td>{{ $item->zip_code }}</td>
                         <td>
                             @if($item->status)
                                 <i class="fas fa-check text-success"></i>

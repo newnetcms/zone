@@ -2,6 +2,7 @@
 return [
     'name'   => 'Name',
     'status' => 'Status',
+    'zip_code' => 'Zip Code',
 
     'index'  => [
         'page_title'    => 'Townships',

@@ -37,6 +37,7 @@ class ZoneProvince extends Model
         'code',
         'status',
         'sort_order',
+        'zip_code',
     ];
 
     protected $casts = [

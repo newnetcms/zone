@@ -50,13 +50,10 @@ class DistrictController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->zoneDistrictRepository->update(['id' => $id], [
-            'name' => $request->name,
-            'code' => $request->code,
-            'status' => $request->status
-        ]);
+        $item = $this->zoneDistrictRepository->updateById($request->all(), $id);
+
         return redirect()
-            ->back()
+            ->route('zone.admin.district.index', $item->province_id)
             ->with('success', __('zone::message.notification.updated'));
     }
 

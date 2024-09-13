@@ -39,6 +39,7 @@ class ZoneTownship extends Model
         'status',
         'sort_order',
         'district_id',
+        'zip_code',
     ];
 
     protected $casts = [
