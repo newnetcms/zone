@@ -50,7 +50,7 @@ class ZoneDistrict extends Model
 
     public function province()
     {
-        return $this->belongsTo(ZoneProvince::class, 'district_id', 'id');
+        return $this->belongsTo(ZoneProvince::class, 'province_id');
     }
 
     public function townships()

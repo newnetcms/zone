@@ -36,7 +36,7 @@
         </div>
         <div class="card-body">
             <form class="form-inline newnet-table-search">
-                @input(['item' => null, 'name' => 'name', 'label' => 'search', 'value' => request('name')])
+                @input(['item' => null, 'name' => 'name', 'label' => __('zone::province.name'), 'value' => request('name')])
 
                 <button type="submit" class="btn btn-primary mr-1">
                     {{ __('core::button.search') }}
@@ -48,30 +48,36 @@
             <table class="table table-striped table-bordered dt-responsive nowrap bootstrap4-styling">
                 <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>{{ __('zone::province.name') }}</th>
+                    <th>{{ __('zone::province.level_2') }}</th>
+                    <th>{{ __('zone::province.status') }}</th>
                     <th>{{ __('zone::province.sort_order') }}</th>
                     <th>{{ __('zone::province.zip_code') }}</th>
-                    <th>{{ __('zone::province.status') }}</th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($items as $item)
                     <tr>
-                        <td>{{ $item->id }}</td>
+                        <td>{{ $loop->index + $items->firstItem() }}</td>
                         <td>
-                            <a href="{{ route('zone.admin.district.index', $item->id) }}">
+                            <a href="{{ route('zone.admin.province.edit', $item->id) }}">
                                 {{ $item->name }}
                             </a>
                         </td>
-                        <td>{{ $item->sort_order }}</td>
-                        <td>{{ $item->zip_code }}</td>
+                        <td>
+                            <a href="{{ route('zone.admin.district.index', ['province_id' => $item->id]) }}">
+                                {{ __('zone::province.level_2_count', ['count' => $item->level_2->count()]) }}
+                            </a>
+                        </td>
                         <td>
                             @if($item->status)
                                 <i class="fas fa-check text-success"></i>
                             @endif
                         </td>
+                        <td>{{ $item->sort_order }}</td>
+                        <td>{{ $item->zip_code }}</td>
                         <td class="text-right">
                             <a href="{{ route('zone.admin.province.edit', $item->id) }}" class="btn btn-success-soft btn-sm mr-1">
                                 <i class="fas fa-pencil-alt"></i>

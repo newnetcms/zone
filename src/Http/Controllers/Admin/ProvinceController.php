@@ -5,40 +5,24 @@ namespace Newnet\Zone\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Session;
-use Newnet\Zone\Http\Requests\ZoneRequest;
-use Newnet\Zone\Models\ZoneProvince;
-use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepositoryInterface;
-use Newnet\Zone\Repositories\Eloquent\ZoneProvinceRepositoryInterface;
+use Newnet\AdminUi\Facades\AdminMenu;
+use Newnet\Zone\Http\Requests\ProvinceRequest;
+use Newnet\Zone\Repositories\ProvinceRepository;
+use Newnet\Zone\ZoneAdminMenuKey;
 
 class ProvinceController extends Controller
 {
-    /**
-     * @var ZoneProvinceRepositoryInterface
-     */
-    private $zoneProvinceRepository;
+    protected ProvinceRepository $provinceRepository;
 
-    /**
-     * @var ZoneDistrictRepositoryInterface
-     */
-    private $zoneDistrictRepository;
-
-    /**
-     * ZoneController constructor.
-     * @param ZoneProvinceRepositoryInterface $zoneProvinceRepository
-     */
-    public function __construct(ZoneProvinceRepositoryInterface $zoneProvinceRepository)
+    public function __construct(ProvinceRepository $provinceRepository)
     {
-        $this->zoneProvinceRepository = $zoneProvinceRepository;
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+        $this->provinceRepository = $provinceRepository;
     }
 
     public function index(Request $request)
     {
-//        $items = $this->zoneProvinceRepository->paginate($request->input('max', 20));
-        $items = ZoneProvince::query();
-        if ($request->name) {
-            $items = $items->where('name', 'like', '%'.$request->name.'%');
-        }
-        $items = $items->paginate(20);
+        $items = $this->provinceRepository->paginate($request->input('max', 20));
 
         return view('zone::admin.provinces.index', compact('items'));
     }
@@ -48,37 +32,38 @@ class ProvinceController extends Controller
         return view('zone::admin.provinces.create');
     }
 
-    public function store(ZoneRequest $request)
+    public function store(ProvinceRequest $request)
     {
-        $this->zoneProvinceRepository->create($request->input());
+        $item = $this->provinceRepository->create($request->all());
 
         return redirect()
-            ->route('zone.admin.province.index')
-            ->with('success', __('zone::message.notification.created'));
+            ->route('zone.admin.province.edit', [
+                'province' => $item,
+                'edit_locale' => $request->input('edit_locale'),
+            ])
+            ->with('success', __('zone::province.notification.created'));
     }
 
     public function edit($id)
     {
-        $item = $this->zoneProvinceRepository->getById($id);
+        $item = $this->provinceRepository->find($id);
 
         return view('zone::admin.provinces.edit', compact('item'));
     }
 
-    public function update(ZoneRequest $request, $id)
+    public function update(ProvinceRequest $request, $id)
     {
-        $this->zoneProvinceRepository->updateById($request->input(), $id);
+        $this->provinceRepository->updateById($request->all(), $id);
 
-        return redirect()
-            ->route('zone.admin.province.index')
-            ->with('success', __('zone::message.notification.updated'));
+        return back()->with('success', __('zone::province.notification.updated'));
     }
 
     public function destroy($id, Request $request)
     {
-        $this->zoneProvinceRepository->destroy($id);
+        $this->provinceRepository->delete($id);
 
         if ($request->wantsJson()) {
-            Session::flash('success', __('zone::message.notification.deleted'));
+            Session::flash('success', __('zone::province.notification.deleted'));
             return response()->json([
                 'success' => true,
             ]);
@@ -86,22 +71,6 @@ class ProvinceController extends Controller
 
         return redirect()
             ->route('zone.admin.provinces.index')
-            ->with('success', __('zone::message.notification.deleted'));
-    }
-
-    public function districts(Request $request, $id)
-    {
-        $item = $this->zoneProvinceRepository->getById($id);
-        $districts = $item->districts()->get();
-        $district_id = $request->district_id;
-        $firstItemId = count($districts) > 0 ? $districts[0]->id : '';
-
-        if ($request->ajax()) {
-            $isTownship = false;
-            $renderHtml = view('zone::admin.provinces.zone-ajax', compact('districts', 'isTownship', 'district_id'))->render();
-            return response()->json(['districts' => $renderHtml, 'firstItemId' => $firstItemId]);
-        }
-
-        return view('zone::admin.districts.index', compact('districts'));
+            ->with('success', __('zone::province.notification.deleted'));
     }
 }

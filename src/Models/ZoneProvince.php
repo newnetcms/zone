@@ -38,15 +38,28 @@ class ZoneProvince extends Model
         'status',
         'sort_order',
         'zip_code',
+        'country_id',
+        'args',
     ];
 
     protected $casts = [
         'status' => 'boolean',
+        'args' => 'object',
     ];
 
     public function districts()
     {
         return $this->hasMany(ZoneDistrict::class, 'province_id', 'id');
+    }
+
+    public function level_2()
+    {
+        return $this->hasMany(ZoneDistrict::class, 'province_id', 'id');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(ZoneCountry::class, 'country_id');
     }
 
     public function getNameAttribute($value)

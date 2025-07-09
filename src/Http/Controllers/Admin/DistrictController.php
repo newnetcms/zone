@@ -5,70 +5,72 @@ namespace Newnet\Zone\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Session;
-use Newnet\Zone\Http\Requests\ZoneRequest;
-use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepositoryInterface;
+use Newnet\AdminUi\Facades\AdminMenu;
+use Newnet\Zone\Http\Requests\DistrictRequest;
+use Newnet\Zone\Repositories\DistrictRepository;
+use Newnet\Zone\ZoneAdminMenuKey;
 
 class DistrictController extends Controller
 {
-    /**
-     * @var ZoneDistrictRepositoryInterface
-     */
-    private $zoneDistrictRepository;
+    protected DistrictRepository $districtRepository;
 
-    public function __construct(ZoneDistrictRepositoryInterface $zoneDistrictRepository)
+    public function __construct(DistrictRepository $districtRepository)
     {
-        $this->zoneDistrictRepository = $zoneDistrictRepository;
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+        $this->districtRepository = $districtRepository;
     }
 
-    public function index($id)
+    public function index(Request $request)
     {
+        $items = $this->districtRepository->paginate($request->input('max', 20));
 
+        return view('zone::admin.district.index', compact('items'));
     }
 
-    public function create($id)
+    public function create()
     {
-        return view('zone::admin.districts.create',  compact('id'));
+        return view('zone::admin.district.create');
     }
 
-    public function store(ZoneRequest $request, $id)
+    public function store(DistrictRequest $request)
     {
-        $data = [
-            'name' => $request->name,
-            'code' => $request->code,
-            'status' => $request->status,
-            'province_id' => $id
-        ];
-        $this->zoneDistrictRepository->create($data);
-        return redirect()->route('zone.admin.district.index', $id);
+        $item = $this->districtRepository->create($request->all());
+
+        return redirect()
+            ->route('zone.admin.district.edit', [
+                'district' => $item,
+                'edit_locale' => $request->input('edit_locale'),
+            ])
+            ->with('success', __('zone::district.notification.created'));
     }
 
     public function edit($id)
     {
-        $item = $this->zoneDistrictRepository->getById($id);
-        return view('zone::admin.districts.edit', compact('item'));
+        $item = $this->districtRepository->find($id);
+
+        return view('zone::admin.district.edit', compact('item'));
     }
 
-    public function update(Request $request, $id)
+    public function update(DistrictRequest $request, $id)
     {
-        $item = $this->zoneDistrictRepository->updateById($request->all(), $id);
+        $this->districtRepository->updateById($request->all(), $id);
 
-        return redirect()
-            ->route('zone.admin.district.index', $item->province_id)
-            ->with('success', __('zone::message.notification.updated'));
+        return back()->with('success', __('zone::district.notification.updated'));
     }
 
     public function destroy($id, Request $request)
     {
-        $this->zoneDistrictRepository->destroy($id);
+        $this->districtRepository->delete($id);
+
         if ($request->wantsJson()) {
-            Session::flash('success', __('zone::message.notification.deleted'));
+            Session::flash('success', __('zone::district.notification.deleted'));
             return response()->json([
                 'success' => true,
             ]);
         }
 
         return redirect()
-            ->back()
-            ->with('success', __('zone::message.notification.deleted'));
+            ->route('zone.admin.district.index')
+            ->with('success', __('zone::district.notification.deleted'));
     }
 }

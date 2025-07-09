@@ -5,92 +5,72 @@ namespace Newnet\Zone\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Session;
-use Newnet\Zone\Http\Requests\ZoneRequest;
-use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepositoryInterface;
-use Newnet\Zone\Repositories\Eloquent\ZoneTownshipRepositoryInterface;
+use Newnet\AdminUi\Facades\AdminMenu;
+use Newnet\Zone\Http\Requests\TownshipRequest;
+use Newnet\Zone\Repositories\TownshipRepository;
+use Newnet\Zone\ZoneAdminMenuKey;
 
 class TownshipController extends Controller
 {
-    /**
-     * @var ZoneDistrictRepositoryInterface
-     */
-    private $zoneDistrictRepository;
-    /**
-     * @var ZoneTownshipRepositoryInterface
-     */
-    private $zoneTownshipRepository;
+    protected TownshipRepository $townshipRepository;
 
-    public function __construct(
-        ZoneDistrictRepositoryInterface $zoneDistrictRepository,
-        ZoneTownshipRepositoryInterface $zoneTownshipRepository
-    )
+    public function __construct(TownshipRepository $townshipRepository)
     {
-        $this->zoneDistrictRepository = $zoneDistrictRepository;
-        $this->zoneTownshipRepository = $zoneTownshipRepository;
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+        $this->townshipRepository = $townshipRepository;
     }
 
-    public function index($id)
+    public function index(Request $request)
     {
+        $items = $this->townshipRepository->paginate($request->input('max', 20));
 
+        return view('zone::admin.townships.index', compact('items'));
     }
 
-    public function create($id)
+    public function create()
     {
-        return view('zone::admin.townships.create',  compact('id'));
+        return view('zone::admin.townships.create');
     }
 
-    public function store(ZoneRequest $request, $id)
+    public function store(TownshipRequest $request)
     {
-        $data = [
-            'name' => $request->name,
-            'code' => $request->code,
-            'status' => $request->status,
-            'district_id' => $id
-        ];
-        $this->zoneTownshipRepository->create($data);
-        return redirect()->route('zone.admin.township.index', $id);
+        $item = $this->townshipRepository->create($request->all());
+
+        return redirect()
+            ->route('zone.admin.township.edit', [
+                'township' => $item,
+                'edit_locale' => $request->input('edit_locale'),
+            ])
+            ->with('success', __('zone::township.notification.created'));
     }
 
     public function edit($id)
     {
-        $item = $this->zoneTownshipRepository->getById($id);
+        $item = $this->townshipRepository->find($id);
+
         return view('zone::admin.townships.edit', compact('item'));
     }
 
-    public function update(Request $request, $id)
+    public function update(TownshipRequest $request, $id)
     {
-        $item = $this->zoneTownshipRepository->updateById($request->all(), $id);
+        $this->townshipRepository->updateById($request->all(), $id);
 
-        return redirect()
-            ->route('zone.admin.township.index', $item->district_id)
-            ->with('success', __('zone::message.notification.updated'));
+        return back()->with('success', __('zone::township.notification.updated'));
     }
 
     public function destroy($id, Request $request)
     {
-        $this->zoneTownshipRepository->destroy($id);
+        $this->townshipRepository->delete($id);
+
         if ($request->wantsJson()) {
-            Session::flash('success', __('zone::message.notification.deleted'));
+            Session::flash('success', __('zone::township.notification.deleted'));
             return response()->json([
                 'success' => true,
             ]);
         }
 
         return redirect()
-            ->back()
-            ->with('success', __('zone::message.notification.deleted'));
-    }
-
-    public function townships(Request $request, $id) {
-        $item = $this->zoneDistrictRepository->getById($id);
-        $townships = $item->townships()->get();
-        $township_id = $request->township_id;
-        $firstItemId = count($townships) > 0 ? $townships[0]->id : '';
-        if ($request->ajax()) {
-            $isTownship = true;
-            $renderHtml = view('zone::admin.provinces.zone-ajax', compact('townships', 'isTownship', 'township_id'))->render();
-            return response()->json(['townships' => $renderHtml, 'firstItemId' => $firstItemId]);
-        }
-        return view('zone::admin.townships.index', compact('townships'));
+            ->route('zone.admin.townships.index')
+            ->with('success', __('zone::township.notification.deleted'));
     }
 }

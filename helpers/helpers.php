@@ -14,12 +14,11 @@ if (!function_exists('get_zone_provice_options')) {
     {
         $options = [];
         $zoneProvinces = ZoneProvince::whereStatus(1)
+            ->orderByRaw('sort_order IS NULL')
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->get([
-                'id',
-                'name',
-            ]);
+            ->get();
+
         foreach ($zoneProvinces as $item) {
             $options[] = [
                 'value' => $item->id,
