@@ -3,11 +3,14 @@ return [
     'model_name' => 'Quốc gia',
 
     'name' => 'Quốc gia',
+    'code' => 'Mã quốc gia',
     'description' => 'Mô tả',
     'content' => 'Nội dung',
     'is_active' => 'Kích hoạt',
     'created_at' => 'Ngày tạo',
     'provinces' => 'Tỉnh/thành phố',
+    'province' => 'Tỉnh/thành',
+    'province_count' => ':count tỉnh thành phố',
 
     'index' => [
         'page_title' => 'Quốc gia',

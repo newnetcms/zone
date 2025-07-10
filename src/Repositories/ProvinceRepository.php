@@ -20,6 +20,10 @@ class ProvinceRepository extends BaseRepository
             $builder->where('name', 'like', "%$name%");
         }
 
+        if ($countryId = request('country_id')) {
+            $builder->where('country_id', $countryId);
+        }
+
         return $builder->orderByRaw('sort_order IS NULL')
             ->orderBy('sort_order')
             ->orderBy('name');

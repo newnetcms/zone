@@ -25,6 +25,7 @@ class CountryRequest extends FormRequest
     {
         return [
             'name' => 'required',
+            'code' => 'required|unique:zone_countries,code,'.$this->route('country'),
         ];
     }
 
@@ -32,6 +33,7 @@ class CountryRequest extends FormRequest
     {
         return [
             'name' => __('zone::country.name'),
+            'code' => __('zone::country.code'),
         ];
     }
 }

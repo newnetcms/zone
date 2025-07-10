@@ -37,6 +37,9 @@
         <div class="card-body">
             <form class="form-inline newnet-table-search">
                 @input(['item' => null, 'name' => 'name', 'label' => __('zone::province.name'), 'value' => request('name')])
+                @if(config('cms.zone.enable_country'))
+                    @select2(['item' => null, 'name' => 'country_id', 'label' => __('zone::province.country_id'), 'value' => request('country_id'), 'options' => get_zone_country_options()])
+                @endif
 
                 <button type="submit" class="btn btn-primary mr-1">
                     {{ __('core::button.search') }}
@@ -54,6 +57,9 @@
                     <th>{{ __('zone::province.status') }}</th>
                     <th>{{ __('zone::province.sort_order') }}</th>
                     <th>{{ __('zone::province.zip_code') }}</th>
+                    @if(config('cms.zone.enable_country'))
+                        <th>{{ __('zone::province.country_id') }}</th>
+                    @endif
                     <th></th>
                 </tr>
                 </thead>
@@ -78,6 +84,9 @@
                         </td>
                         <td>{{ $item->sort_order }}</td>
                         <td>{{ $item->zip_code }}</td>
+                        @if(config('cms.zone.enable_country'))
+                            <td>{{ object_get($item, 'country.name') }}</td>
+                        @endif
                         <td class="text-right">
                             <a href="{{ route('zone.admin.province.edit', $item->id) }}" class="btn btn-success-soft btn-sm mr-1">
                                 <i class="fas fa-pencil-alt"></i>

@@ -54,10 +54,9 @@
                     <tr>
                         <th>{{ __('#') }}</th>
                         <th nowrap>{{ __('zone::country.name') }}</th>
+                        <th nowrap>{{ __('zone::country.code') }}</th>
                         <th nowrap>{{ __('zone::country.province') }}</th>
-                        <th nowrap>{{ __('zone::country.old_wards') }}</th>
                         <th nowrap>{{ __('zone::country.is_active') }}</th>
-                        <th nowrap>{{ __('zone::country.created_at') }}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -69,18 +68,18 @@
                                 <a href="{{ route('zone.admin.country.edit', $item->id) }}">
                                     {{ $item->name }}
                                 </a>
-                                <a href="{{ $item->url }}" target="_blank">
-                                    <i class="fas fa-external-link-alt"></i>
+                            </td>
+                            <td nowrap>{{ $item->code }}</td>
+                            <td nowrap>
+                                <a href="{{ route('zone.admin.province.index', ['country_id' => $item->id]) }}">
+                                    {{ __('zone::country.province_count', ['count' => $item->provinces->count()]) }}
                                 </a>
                             </td>
-                            <td nowrap>{{ object_get($item, 'province.name') }}</td>
-                            <td>{{ $item->old_wards }}</td>
                             <td>
                                 @if($item->is_active)
                                     <i class="fas fa-check text-success"></i>
                                 @endif
                             </td>
-                            <td nowrap>{{ $item->created_at }}</td>
                             <td nowrap class="text-right">
                                 @admincan('zone.admin.country.edit')
                                     <a href="{{ route('zone.admin.country.edit', $item->id) }}" class="btn btn-success-soft btn-sm mr-1">

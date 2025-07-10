@@ -11,6 +11,7 @@ return [
     'sort_order' => 'Thứ tự',
     'zip_code' => 'Zip Code',
     'city' => 'Thành phố',
+    'country_id' => 'Quốc gia',
 
     'notification' => [
         'created' => 'Tạo Tỉnh/Thành phố thành công!',

@@ -15,7 +15,6 @@ class ZoneCountry extends Model
         'name',
         'code',
         'is_active',
-        'sort_order',
         'alpha2',
         'alpha3',
         'numeric',

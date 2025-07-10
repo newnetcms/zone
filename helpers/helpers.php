@@ -1,8 +1,32 @@
 <?php
 
+use Newnet\Zone\Models\ZoneCountry;
 use Newnet\Zone\Models\ZoneDistrict;
 use Newnet\Zone\Models\ZoneProvince;
 use Newnet\Zone\Models\ZoneTownship;
+
+if (!function_exists('get_zone_country_options')) {
+    /**
+     * Get Zone Country Options
+     *
+     * @return array
+     */
+    function get_zone_country_options()
+    {
+        $options = [];
+        $zoneProvinces = ZoneCountry::where('is_active', 1)
+            ->orderBy('name')
+            ->get();
+
+        foreach ($zoneProvinces as $item) {
+            $options[] = [
+                'value' => $item->id,
+                'label' => trim($item->name),
+            ];
+        }
+        return $options;
+    }
+}
 
 if (!function_exists('get_zone_provice_options')) {
     /**
