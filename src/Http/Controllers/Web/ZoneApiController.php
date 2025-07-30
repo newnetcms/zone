@@ -3,6 +3,7 @@
 namespace Newnet\Zone\Http\Controllers\Web;
 
 use Illuminate\Routing\Controller;
+use Newnet\Zone\Models\ZoneProvince;
 use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepositoryInterface;
 use Newnet\Zone\Repositories\Eloquent\ZoneProvinceRepositoryInterface;
 use Newnet\Zone\Repositories\Eloquent\ZoneTownshipRepositoryInterface;
@@ -37,6 +38,16 @@ class ZoneApiController extends Controller
     public function provinces()
     {
         $provinces = $this->zoneProvinceRepository->allActiveWithSort(['id', 'name']);
+
+        return [
+            'success' => true,
+            'items' => $provinces,
+        ];
+    }
+
+    public function countryProvinces($countryId)
+    {
+        $provinces = ZoneProvince::where('status', 1)->where('country_id', $countryId)->get(['id', 'name']);
 
         return [
             'success' => true,
