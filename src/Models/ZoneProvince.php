@@ -3,6 +3,7 @@
 namespace Newnet\Zone\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Newnet\Media\Traits\HasMediaTrait;
 
 /**
  * Newnet\Zone\Models\ZoneProvince
@@ -30,6 +31,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ZoneProvince extends Model
 {
+    use HasMediaTrait;
+
     protected $table = 'zone_provinces';
 
     protected $fillable = [
@@ -40,6 +43,7 @@ class ZoneProvince extends Model
         'zip_code',
         'country_id',
         'args',
+        'image',
     ];
 
     protected $casts = [
@@ -65,5 +69,15 @@ class ZoneProvince extends Model
     public function getNameAttribute($value)
     {
         return trim(preg_replace('/Thành phố|Tỉnh/', '', $value));
+    }
+
+    public function setImageAttribute($value)
+    {
+        $this->mediaAttributes['image'] = $value;
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->getFirstMedia('image');
     }
 }
