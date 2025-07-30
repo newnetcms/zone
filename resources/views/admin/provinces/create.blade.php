@@ -31,7 +31,7 @@
             <form action="{{ route('zone.admin.province.store') }}" method="POST">
                 @csrf
 
-                @include('zone::admin.provinces._fields', ['item' => null])
+                @include('zone::admin.provinces._fields')
 
                 <button class="btn btn-success" type="submit">{{ __('core::button.submit') }}</button>
             </form>

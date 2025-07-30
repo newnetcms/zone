@@ -26,6 +26,13 @@
                 </div>
                 <div class="text-right">
                     <div class="actions">
+                        @admincan('zone.admin.province.index')
+                            <a href="{{ route('zone.admin.province.index') }}" class="action-item">
+                                <i class="fa fa-list"></i>
+                                {{ trans('zone::country.all_province') }}
+                            </a>
+                        @endadmincan
+
 	                    @admincan('zone.admin.country.create')
 	                        <a href="{{ route('zone.admin.country.create') }}" class="action-item">
 	                            <i class="fa fa-plus"></i>

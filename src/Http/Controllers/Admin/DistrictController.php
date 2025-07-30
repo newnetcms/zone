@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Session;
 use Newnet\AdminUi\Facades\AdminMenu;
 use Newnet\Zone\Http\Requests\DistrictRequest;
+use Newnet\Zone\Models\ZoneDistrict;
 use Newnet\Zone\Repositories\DistrictRepository;
 use Newnet\Zone\ZoneAdminMenuKey;
 
@@ -16,20 +17,36 @@ class DistrictController extends Controller
 
     public function __construct(DistrictRepository $districtRepository)
     {
-        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
         $this->districtRepository = $districtRepository;
     }
 
     public function index(Request $request)
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         $items = $this->districtRepository->paginate($request->input('max', 20));
 
-        return view('zone::admin.district.index', compact('items'));
+        if (config('cms.zone.legacy_mode')) {
+            return view('zone::admin.district-old.index', compact('items'));
+        } else {
+            return view('zone::admin.district.index', compact('items'));
+        }
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('zone::admin.district.create');
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
+        $item = new ZoneDistrict();
+        if ($province_id = $request->input('province_id')) {
+            $item->province_id = $province_id;
+        }
+
+        if (config('cms.zone.legacy_mode')) {
+            return view('zone::admin.district-old.create', compact('item'));
+        } else {
+            return view('zone::admin.district.create', compact('item'));
+        }
     }
 
     public function store(DistrictRequest $request)
@@ -46,9 +63,15 @@ class DistrictController extends Controller
 
     public function edit($id)
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         $item = $this->districtRepository->find($id);
 
-        return view('zone::admin.district.edit', compact('item'));
+        if (config('cms.zone.legacy_mode')) {
+            return view('zone::admin.district-old.edit', compact('item'));
+        } else {
+            return view('zone::admin.district.edit', compact('item'));
+        }
     }
 
     public function update(DistrictRequest $request, $id)

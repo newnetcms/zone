@@ -7,6 +7,8 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Session;
 use Newnet\AdminUi\Facades\AdminMenu;
 use Newnet\Zone\Http\Requests\TownshipRequest;
+use Newnet\Zone\Models\ZoneDistrict;
+use Newnet\Zone\Models\ZoneTownship;
 use Newnet\Zone\Repositories\TownshipRepository;
 use Newnet\Zone\ZoneAdminMenuKey;
 
@@ -16,20 +18,35 @@ class TownshipController extends Controller
 
     public function __construct(TownshipRepository $townshipRepository)
     {
-        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
         $this->townshipRepository = $townshipRepository;
     }
 
     public function index(Request $request)
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         $items = $this->townshipRepository->paginate($request->input('max', 20));
 
-        return view('zone::admin.townships.index', compact('items'));
+        $district = null;
+        if ($district_id = $request->input('district_id')) {
+            $district = ZoneDistrict::find($district_id);
+        }
+
+        return view('zone::admin.township.index', compact('items', 'district'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('zone::admin.townships.create');
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
+        $item = new ZoneTownship();
+        if ($district_id = $request->input('district_id')) {
+            $item->district_id = $district_id;
+        } else {
+            return back();
+        }
+
+        return view('zone::admin.township.create', compact('item'));
     }
 
     public function store(TownshipRequest $request)
@@ -46,9 +63,11 @@ class TownshipController extends Controller
 
     public function edit($id)
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         $item = $this->townshipRepository->find($id);
 
-        return view('zone::admin.townships.edit', compact('item'));
+        return view('zone::admin.township.edit', compact('item'));
     }
 
     public function update(TownshipRequest $request, $id)
@@ -70,7 +89,7 @@ class TownshipController extends Controller
         }
 
         return redirect()
-            ->route('zone.admin.townships.index')
+            ->route('zone.admin.township.index')
             ->with('success', __('zone::township.notification.deleted'));
     }
 }

@@ -10,6 +10,13 @@
     <nav aria-label="breadcrumb" class="col-sm-4 order-sm-last mb-3 mb-sm-0 p-0 ">
         <ol class="breadcrumb d-inline-flex font-weight-600 fs-13 bg-white mb-0 float-sm-right">
             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.index') }}">{{ trans('dashboard::message.index.breadcrumb') }}</a></li>
+            @if(!empty($district))
+                <li class="breadcrumb-item">
+                    <a href="{{ route('zone.admin.district.index', ['province_id' => $district->province_id]) }}">
+                        {{ $district->name }}
+                    </a>
+                </li>
+            @endif
             <li class="breadcrumb-item active">{{ trans('zone::township.index.breadcrumb') }}</li>
         </ol>
     </nav>
@@ -27,7 +34,7 @@
                 <div class="text-right">
                     <div class="actions">
 	                    @admincan('zone.admin.township.create')
-	                        <a href="{{ route('zone.admin.township.create') }}" class="action-item">
+	                        <a href="{{ route('zone.admin.township.create', ['district_id' => request('district_id')]) }}" class="action-item">
 	                            <i class="fa fa-plus"></i>
 	                            {{ __('core::button.add') }}
 	                        </a>
@@ -39,8 +46,6 @@
         <div class="card-body">
             <form class="form-inline newnet-table-search">
                 @input(['item' => null, 'name' => 'name', 'label' => __('zone::township.name'), 'value' => request('name')])
-                @input(['item' => null, 'name' => 'old_wards', 'label' => __('zone::township.old_wards'), 'value' => request('old_wards')])
-                @select2(['item' => null, 'name' => 'province_id', 'label' => __('zone::township.province_id'), 'value' => request('province_id'), 'options' => get_new_province_options()])
 
                 <button type="submit" class="btn btn-primary mr-1">
                     {{ __('core::button.search') }}
@@ -56,10 +61,10 @@
                     <tr>
                         <th>{{ __('#') }}</th>
                         <th nowrap>{{ __('zone::township.name') }}</th>
-                        <th nowrap>{{ __('zone::township.province') }}</th>
-                        <th nowrap>{{ __('zone::township.old_wards') }}</th>
-                        <th nowrap>{{ __('zone::township.is_active') }}</th>
-                        <th nowrap>{{ __('zone::township.created_at') }}</th>
+                        <th nowrap>{{ __('zone::township.district') }}</th>
+                        <th nowrap>{{ __('zone::township.status') }}</th>
+                        <th nowrap>{{ __('zone::township.sort_order') }}</th>
+                        <th nowrap>{{ __('zone::township.zip_code') }}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -71,18 +76,15 @@
                                 <a href="{{ route('zone.admin.township.edit', $item->id) }}">
                                     {{ $item->name }}
                                 </a>
-                                <a href="{{ $item->url }}" target="_blank">
-                                    <i class="fas fa-external-link-alt"></i>
-                                </a>
                             </td>
-                            <td nowrap>{{ object_get($item, 'province.name') }}</td>
-                            <td>{{ $item->old_wards }}</td>
+                            <td nowrap>{{ object_get($item, 'district.name') }}</td>
                             <td>
-                                @if($item->is_active)
+                                @if($item->status)
                                     <i class="fas fa-check text-success"></i>
                                 @endif
                             </td>
-                            <td nowrap>{{ $item->created_at }}</td>
+                            <td nowrap>{{ $item->sort_order }}</td>
+                            <td nowrap>{{ $item->zip_code }}</td>
                             <td nowrap class="text-right">
                                 @admincan('zone.admin.township.edit')
                                     <a href="{{ route('zone.admin.township.edit', $item->id) }}" class="btn btn-success-soft btn-sm mr-1">

@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Session;
 use Newnet\AdminUi\Facades\AdminMenu;
 use Newnet\Zone\Http\Requests\ProvinceRequest;
+use Newnet\Zone\Models\ZoneProvince;
 use Newnet\Zone\Repositories\ProvinceRepository;
 use Newnet\Zone\ZoneAdminMenuKey;
 
@@ -16,20 +17,29 @@ class ProvinceController extends Controller
 
     public function __construct(ProvinceRepository $provinceRepository)
     {
-        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
         $this->provinceRepository = $provinceRepository;
     }
 
     public function index(Request $request)
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         $items = $this->provinceRepository->paginate($request->input('max', 20));
 
         return view('zone::admin.provinces.index', compact('items'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('zone::admin.provinces.create');
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
+        $item = null;
+        if ($country_id = $request->input('country_id')) {
+            $item = new ZoneProvince();
+            $item->country_id = $country_id;
+        }
+
+        return view('zone::admin.provinces.create', compact('item'));
     }
 
     public function store(ProvinceRequest $request)
@@ -46,6 +56,8 @@ class ProvinceController extends Controller
 
     public function edit($id)
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         $item = $this->provinceRepository->find($id);
 
         return view('zone::admin.provinces.edit', compact('item'));

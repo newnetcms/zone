@@ -1,17 +1,17 @@
 @extends('core::admin.master')
 
-@section('meta_title', __('zone::district.edit.page_title'))
+@section('meta_title', __('zone::district-old.edit.page_title'))
 
-@section('page_title', __('zone::district.edit.page_title'))
+@section('page_title', __('zone::district-old.edit.page_title'))
 
-@section('page_subtitle', __('zone::district.edit.page_subtitle'))
+@section('page_subtitle', __('zone::district-old.edit.page_subtitle'))
 
 @section('breadcrumb')
     <nav aria-label="breadcrumb" class="col-sm-4 order-sm-last mb-3 mb-sm-0 p-0 ">
         <ol class="breadcrumb d-inline-flex font-weight-600 fs-13 bg-white mb-0 float-sm-right">
             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.index') }}">{{ trans('dashboard::message.index.breadcrumb') }}</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('zone.admin.district.index', ['province_id' => $item->province_id]) }}">{{ trans('zone::district.index.breadcrumb') }}</a></li>
-            <li class="breadcrumb-item active">{{ trans('zone::district.edit.breadcrumb') }}</li>
+            <li class="breadcrumb-item"><a href="{{ route('zone.admin.district.index', ['province_id' => $item->province_id]) }}">{{ trans('zone::district-old.index.breadcrumb') }}</a></li>
+            <li class="breadcrumb-item active">{{ trans('zone::district-old.edit.breadcrumb') }}</li>
         </ol>
     </nav>
 @stop
@@ -26,7 +26,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="fs-17 font-weight-600 mb-0">
-                            {{ __('zone::district.edit.page_title') }}
+                            {{ __('zone::district-old.edit.page_title') }}
                         </h6>
                     </div>
                     <div class="text-right">

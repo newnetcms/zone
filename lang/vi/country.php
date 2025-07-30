@@ -11,6 +11,7 @@ return [
     'provinces' => 'Tỉnh/thành phố',
     'province' => 'Tỉnh/thành',
     'province_count' => ':count tỉnh thành phố',
+    'all_province' => 'Tất cả tỉnh thành phố',
 
     'index' => [
         'page_title' => 'Quốc gia',

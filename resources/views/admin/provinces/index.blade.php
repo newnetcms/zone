@@ -26,7 +26,7 @@
                 </div>
                 <div class="text-right">
                     <div class="actions">
-                        <a href="{{ route('zone.admin.province.create') }}" class="action-item">
+                        <a href="{{ route('zone.admin.province.create', ['country_id' => request('country_id')]) }}" class="action-item">
                             <i class="fa fa-plus"></i>
                             {{ __('core::button.add') }}
                         </a>
@@ -53,7 +53,11 @@
                 <tr>
                     <th>#</th>
                     <th>{{ __('zone::province.name') }}</th>
-                    <th>{{ __('zone::province.level_2') }}</th>
+                    @if(config('cms.zone.legacy_mode'))
+                        <th>{{ __('zone::province.district') }}</th>
+                    @else
+                        <th>{{ __('zone::province.level_2') }}</th>
+                    @endif
                     <th>{{ __('zone::province.status') }}</th>
                     <th>{{ __('zone::province.sort_order') }}</th>
                     <th>{{ __('zone::province.zip_code') }}</th>
@@ -74,7 +78,11 @@
                         </td>
                         <td>
                             <a href="{{ route('zone.admin.district.index', ['province_id' => $item->id]) }}">
-                                {{ __('zone::province.level_2_count', ['count' => $item->level_2->count()]) }}
+                                @if(config('cms.zone.legacy_mode'))
+                                    {{ __('zone::province.district_count', ['count' => $item->level_2->count()]) }}
+                                @else
+                                    {{ __('zone::province.level_2_count', ['count' => $item->level_2->count()]) }}
+                                @endif
                             </a>
                         </td>
                         <td>

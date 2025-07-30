@@ -6,6 +6,8 @@ return [
     'name' => 'Tỉnh/Thành phố',
     'status' => 'Trạng thái',
     'code' => 'Code',
+    'district' => 'Quận/huyện',
+    'district_count' => ':count quận/huyện',
     'level_2' => 'Phường/Xã',
     'level_2_count' => ':count phường xã',
     'sort_order' => 'Thứ tự',

@@ -16,12 +16,13 @@ class CountryController extends Controller
 
     public function __construct(CountryRepository $countryRepository)
     {
-        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
         $this->countryRepository = $countryRepository;
     }
 
     public function index(Request $request)
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         $items = $this->countryRepository->paginate($request->input('max', 20));
 
         return view('zone::admin.country.index', compact('items'));
@@ -29,6 +30,8 @@ class CountryController extends Controller
 
     public function create()
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         return view('zone::admin.country.create');
     }
 
@@ -46,6 +49,8 @@ class CountryController extends Controller
 
     public function edit($id)
     {
+        AdminMenu::activeMenu(ZoneAdminMenuKey::ZONE);
+
         $item = $this->countryRepository->find($id);
 
         return view('zone::admin.country.edit', compact('item'));

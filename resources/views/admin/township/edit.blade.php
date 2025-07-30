@@ -10,7 +10,7 @@
     <nav aria-label="breadcrumb" class="col-sm-4 order-sm-last mb-3 mb-sm-0 p-0 ">
         <ol class="breadcrumb d-inline-flex font-weight-600 fs-13 bg-white mb-0 float-sm-right">
             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.index') }}">{{ trans('dashboard::message.index.breadcrumb') }}</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('zone.admin.township.index') }}">{{ trans('zone::township.index.breadcrumb') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('zone.admin.township.index', ['district_id' => $item->district_id]) }}">{{ trans('zone::township.index.breadcrumb') }}</a></li>
             <li class="breadcrumb-item active">{{ trans('zone::township.edit.breadcrumb') }}</li>
         </ol>
     </nav>
