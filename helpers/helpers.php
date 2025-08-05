@@ -28,6 +28,15 @@ if (!function_exists('get_zone_country_options')) {
     }
 }
 
+if (!function_exists('get_zone_country_lists')) {
+    function get_zone_country_lists()
+    {
+        return ZoneCountry::where('is_active', 1)
+            ->orderBy('name')
+            ->get();
+    }
+}
+
 if (!function_exists('get_zone_provice_options')) {
     /**
      * Get Zone Province Options

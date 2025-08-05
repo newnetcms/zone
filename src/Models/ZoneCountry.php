@@ -3,12 +3,15 @@
 namespace Newnet\Zone\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Newnet\Media\Traits\HasMediaTrait;
 
 /**
  * @mixin \Eloquent
  */
 class ZoneCountry extends Model
 {
+    use HasMediaTrait;
+
     protected $table = 'zone_countries';
 
     protected $fillable = [
@@ -22,6 +25,7 @@ class ZoneCountry extends Model
         'currency',
         'emoji_flag',
         'args',
+        'image',
     ];
 
     protected $casts = [
@@ -32,5 +36,15 @@ class ZoneCountry extends Model
     public function provinces()
     {
         return $this->hasMany(ZoneProvince::class, 'country_id');
+    }
+
+    public function setImageAttribute($value)
+    {
+        $this->mediaAttributes['image'] = $value;
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->getFirstMedia('image');
     }
 }
