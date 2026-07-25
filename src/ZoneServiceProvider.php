@@ -4,6 +4,7 @@ namespace Newnet\Zone;
 
 use Illuminate\Support\Facades\Blade;
 use Newnet\Zone\Console\Commands\ImportCommand;
+use Newnet\Zone\Console\Commands\SeedCountriesCommand;
 use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepository;
 use Newnet\Zone\Repositories\Eloquent\ZoneDistrictRepositoryInterface;
 use Newnet\Zone\Repositories\Eloquent\ZoneProvinceRepository;
@@ -35,6 +36,7 @@ class ZoneServiceProvider extends BaseModuleServiceProvider
 
         $this->commands([
             ImportCommand::class,
+            SeedCountriesCommand::class,
         ]);
 
         require_once __DIR__.'/../helpers/helpers.php';
