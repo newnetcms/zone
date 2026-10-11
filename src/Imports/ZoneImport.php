@@ -27,12 +27,12 @@ class ZoneImport implements WithHeadingRow, SkipsOnFailure, ToArray, WithChunkRe
         $this->createWardMap();
     }
 
-    public function onFailure(Failure ...$failures)
+    public function onFailure(Failure ...$failures): void
     {
 
     }
 
-    public function array(array $array)
+    public function array(array $array): void
     {
         $wardImport = [];
         foreach ($array as $item) {
